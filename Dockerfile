@@ -1,66 +1,57 @@
-FROM alpine:3.18
+# Home Assistant Add-on Dockerfile für PHP-Projekt mit SQLite
+ARG BUILD_FROM
+FROM $BUILD_FROM
 
-# Install required packages
+# Umgebungsvariablen
+ENV LANG C.UTF-8
+
+# Installiere Apache, PHP und SQLite
 RUN apk add --no-cache \
-    nginx \
-    php81 \
-    php81-fpm \
-    php81-sqlite3 \
-    php81-pdo \
-    php81-pdo_sqlite \
-    php81-session \
-    php81-json \
-    php81-mbstring \
-    php81-curl \
-    php81-xml \
-    php81-simplexml \
-    php81-dom \
-    php81-fileinfo \
-    php81-zip \
-    php81-opcache \
-    supervisor \
-    bash
+    apache2 \
+    php82 \
+    php82-apache2 \
+    php82-sqlite3 \
+    php82-pdo \
+    php82-pdo_sqlite \
+    php82-session \
+    php82-json \
+    php82-mbstring \
+    php82-curl \
+    php82-xml \
+    php82-openssl \
+    && rm -rf /var/cache/apk/*
 
-# Create web root directory
-RUN mkdir -p /var/www/vinotec
+# Apache Konfiguration
+RUN sed -i 's|#ServerName www.example.com:80|ServerName localhost:8080|g' /etc/apache2/httpd.conf \
+    && sed -i 's|Listen 80|Listen 8080|g' /etc/apache2/httpd.conf \
+    && sed -i 's|DocumentRoot "/var/www/localhost/htdocs"|DocumentRoot "/var/www/localhost/htdocs/vinotec"|g' /etc/apache2/httpd.conf \
+    && sed -i 's|<Directory "/var/www/localhost/htdocs">|<Directory "/var/www/localhost/htdocs/vinotec">|g' /etc/apache2/httpd.conf \
+    && sed -i 's|DirectoryIndex index.html|DirectoryIndex index.php index.html|g' /etc/apache2/httpd.conf
 
-# Set up nginx configuration
-RUN rm -f /etc/nginx/http.d/default.conf
-COPY nginx.conf /etc/nginx/nginx.conf
-COPY site.conf /etc/nginx/http.d/default.conf
+# PHP-Modul aktivieren
+RUN sed -i 's|#LoadModule rewrite_module|LoadModule rewrite_module|g' /etc/apache2/httpd.conf
 
-# Set up PHP-FPM configuration
-RUN sed -i 's/;listen.owner = nobody/listen.owner = nginx/' /etc/php81/php-fpm.d/www.conf && \
-    sed -i 's/;listen.group = nobody/listen.group = nginx/' /etc/php81/php-fpm.d/www.conf && \
-    sed -i 's/;listen.mode = 0660/listen.mode = 0666/' /etc/php81/php-fpm.d/www.conf && \
-    sed -i 's/listen = 127.0.0.1:9000/listen = \/run\/php-fpm.sock/' /etc/php81/php-fpm.d/www.conf && \
-    sed -i 's/user = nobody/user = nginx/' /etc/php81/php-fpm.d/www.conf && \
-    sed -i 's/group = nobody/group = nginx/' /etc/php81/php-fpm.d/www.conf
+# Arbeitsverzeichnis setzen
+WORKDIR /var/www/localhost/htdocs
 
-# Create supervisor configuration
-COPY supervisord.conf /etc/supervisord.conf
+# Projektdateien kopieren
+COPY vinotec/ /var/www/localhost/htdocs/
 
-# Set proper permissions
-RUN chown -R nginx:nginx /var/www/vinotec && \
-    chmod -R 755 /var/www/vinotec
+# Berechtigungen setzen
+RUN chown -R apache:apache /var/www/localhost/htdocs \
+    && chmod -R 755 /var/www/localhost/htdocs
 
-# Create necessary directories
-RUN mkdir -p /run/nginx /run/php-fpm /var/log/supervisor
+# SQLite Datenbank-Verzeichnis vorbereiten (falls benötigt)
+RUN mkdir -p /data \
+    && chown apache:apache /data \
+    && chmod 755 /data
 
-# Copy your application files (if any)
-# COPY vinotec/ /var/www/vinotec/
-
-# Create a simple index.php for testing
-RUN echo '<?php phpinfo(); ?>' > /var/www/vinotec/index.php && \
-    echo '<?php echo "PHP works!"; ?>' > /var/www/vinotec/test.php && \
-    echo '<h1>Static HTML works!</h1>' > /var/www/vinotec/index.html
-
-# Copy run script
-COPY run.sh /
-RUN chmod a+x /run.sh
-
-# Expose port 80
+# Port freigeben
 EXPOSE 8080
 
-# Start with run.sh
-CMD ["/run.sh"]
+# Healthcheck
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8080/vinotec/ || exit 1
+
+# Apache im Vordergrund starten
+CMD ["httpd", "-D", "FOREGROUND"]
