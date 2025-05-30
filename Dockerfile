@@ -32,7 +32,10 @@ COPY site.conf /etc/nginx/http.d/default.conf
 # Set up PHP-FPM configuration
 RUN sed -i 's/;listen.owner = nobody/listen.owner = nginx/' /etc/php81/php-fpm.d/www.conf && \
     sed -i 's/;listen.group = nobody/listen.group = nginx/' /etc/php81/php-fpm.d/www.conf && \
-    sed -i 's/listen = 127.0.0.1:9000/listen = \/run\/php-fpm.sock/' /etc/php81/php-fpm.d/www.conf
+    sed -i 's/;listen.mode = 0660/listen.mode = 0666/' /etc/php81/php-fpm.d/www.conf && \
+    sed -i 's/listen = 127.0.0.1:9000/listen = \/run\/php-fpm.sock/' /etc/php81/php-fpm.d/www.conf && \
+    sed -i 's/user = nobody/user = nginx/' /etc/php81/php-fpm.d/www.conf && \
+    sed -i 's/group = nobody/group = nginx/' /etc/php81/php-fpm.d/www.conf
 
 # Create supervisor configuration
 COPY supervisord.conf /etc/supervisord.conf
@@ -48,10 +51,16 @@ RUN mkdir -p /run/nginx /run/php-fpm /var/log/supervisor
 # COPY vinotec/ /var/www/vinotec/
 
 # Create a simple index.php for testing
-RUN echo '<?php phpinfo(); ?>' > /var/www/vinotec/index.php
+RUN echo '<?php phpinfo(); ?>' > /var/www/vinotec/index.php && \
+    echo '<?php echo "PHP works!"; ?>' > /var/www/vinotec/test.php && \
+    echo '<h1>Static HTML works!</h1>' > /var/www/vinotec/index.html
+
+# Copy run script
+COPY run.sh /
+RUN chmod a+x /run.sh
 
 # Expose port 80
-EXPOSE 80
+EXPOSE 8080
 
-# Start supervisor
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
+# Start with run.sh
+CMD ["/run.sh"]
