@@ -1,0 +1,19 @@
+name: Vinotec Webserver
+version: "1.0.0"
+slug: vinotec_nginx
+description: "Ein minimaler NGINX-Webserver mit Unterstützung für Ingress."
+startup: services
+boot: auto
+ingress: true
+ingress_port: 8080
+panel_icon: "mdi:glass-wine"
+panel_title: "Vinotec"
+host_network: false
+privileged: []
+map:
+  - data:rw
+schema: {}
+arch:
+  - amd64
+  - aarch64
+  - armv7

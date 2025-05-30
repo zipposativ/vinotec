@@ -1,0 +1,186 @@
+:root {
+  --bulma-primary-h: 37deg;
+  --bulma-primary-l: 76%;
+  --bulma-link-h: 37deg;
+  --bulma-link-l: 67%;
+  --bulma-danger-h: 360deg;
+}
+
+
+
+#app{
+
+}
+
+#header{
+  padding: 15px;
+  padding-bottom: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1;
+}
+#header .title{
+  line-height: 1;
+  padding: 0;
+  margin: 0;
+}
+#header_box{
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+}
+#header .border{
+  width: 100%;
+  border-bottom: 1px solid #e6e6e6;
+  padding-top: 15px;
+}
+
+#create_button{
+  font-size: 20px;
+  padding: 20px;
+  border-radius: 100%;
+  border: none;
+}
+#create_checkbox{
+  display: none;
+}
+#create_checkbox:checked ~ #create_box{
+  display: block;
+}
+#create_box{
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  max-width: 1000px;
+  width: 100%;
+  height: 80%;
+  transform: translate(-50%, -0%);
+  z-index: 3;
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: none;
+}
+#create_box_header{
+  display: grid;
+  grid-template-columns: 1fr auto;
+}
+#edit_box{
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  max-width: 1000px;
+  width: 100%;
+  height: 80%;
+  transform: translate(-50%, -0%);
+  z-index: 5;
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+#edit_box_header{
+  display: grid;
+  grid-template-columns: 1fr auto;
+}
+#wine_image{
+  display: none;
+}
+#image_output{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#main{
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: calc(100% - 71px);
+  padding: 15px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 2;
+}
+/* #stats{
+
+}
+#grid_stats_box{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-gap: 15px;
+} */
+
+#menu{
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+}
+#search_form{
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  grid-gap: 15px;
+}
+
+#inventory{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 450px));
+  grid-gap: 15px;
+  grid-auto-rows: 1fr;
+}
+
+#evaluation{
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+}
+#evaluation #vine_box .card .card-content .border{
+  width: 100%;
+  border-bottom: 1px solid #e6e6e6;
+  padding: 15px;
+}
+#bottle{
+  display: block;
+  width: 100%;
+  text-align: center;
+}
+#bootle .checked{
+  background-color:
+}
+#controls{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 15px;
+}
+#controls .button{
+  display: inline-block;
+  width: 100%;
+  height: auto;
+}
+#total_count_box{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  justify-items: end;
+}
+
+#delete_box{
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  max-width: 400px;
+  width: 100%;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+}
+#delete_icon{
+  font-size: 60px;
+  margin: 20px 0px;
+  display: block;
+}
+#delete_box form{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 15px;
+}
