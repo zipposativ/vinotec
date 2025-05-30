@@ -1,5 +1,5 @@
 name: Vinotec Webserver
-version: "1.0.0"
+version: "1.0.1"
 slug: vinotec_nginx
 description: "Ein minimaler NGINX-Webserver mit Unterstützung für Ingress."
 startup: services
