@@ -154,7 +154,7 @@
                   <a href="?" class="icon">
                     <i class="fa-solid fa-minus"></i>
                   </a>
-                  <span class="text"><?php echo !empty($row['count']) ? $row['count'] : '0'; ?></span>
+                  <a class="link"><?php echo !empty($row['count']) ? $row['count'] : '0'; ?></a>
                   <a href="?" class="icon">
                     <i class="fa-solid fa-plus"></i>
                   </a>
@@ -309,6 +309,7 @@
         $id = $_GET['delete'];
         $db = new SQLite3('wine_collection.db');
         $stmt = $db->query("DELETE FROM wines WHERE id = ".$id.";");
+        unlink("wine_images/".$id.".png");
         echo '<meta http-equiv="refresh" content="0;url=?">';
       }
     }
