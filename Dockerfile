@@ -24,34 +24,26 @@ RUN apk add --no-cache \
 # Apache Konfiguration
 RUN sed -i 's|#ServerName www.example.com:80|ServerName localhost:8080|g' /etc/apache2/httpd.conf \
     && sed -i 's|Listen 80|Listen 8080|g' /etc/apache2/httpd.conf \
-    && sed -i 's|DocumentRoot "/var/www/localhost/htdocs"|DocumentRoot "/var/www/localhost/htdocs/vinotec"|g' /etc/apache2/httpd.conf \
-    && sed -i 's|<Directory "/var/www/localhost/htdocs">|<Directory "/var/www/localhost/htdocs/vinotec">|g' /etc/apache2/httpd.conf \
     && sed -i 's|DirectoryIndex index.html|DirectoryIndex index.php index.html|g' /etc/apache2/httpd.conf
 
 # PHP-Modul aktivieren
 RUN sed -i 's|#LoadModule rewrite_module|LoadModule rewrite_module|g' /etc/apache2/httpd.conf
 
 # Arbeitsverzeichnis setzen
-WORKDIR /var/www/localhost/htdocs
+WORKDIR /var/www/html
 
 # Projektdateien kopieren
-COPY vinotec/ /var/www/localhost/htdocs/
+COPY vinotec/ /var/www/html
 
 # Berechtigungen setzen
-RUN chown -R apache:apache /var/www/localhost/htdocs \
-    && chmod -R 755 /var/www/localhost/htdocs
+RUN chown -R apache:apache /var/www/html \
+    && chmod -R 755 /var/www/html
 
-# SQLite Datenbank-Verzeichnis vorbereiten (falls benötigt)
-RUN mkdir -p /data \
-    && chown apache:apache /data \
-    && chmod 755 /data
+
 
 # Port freigeben
 EXPOSE 8080
 
-# Healthcheck
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:8080/vinotec/ || exit 1
 
 # Apache im Vordergrund starten
 CMD ["httpd", "-D", "FOREGROUND"]
